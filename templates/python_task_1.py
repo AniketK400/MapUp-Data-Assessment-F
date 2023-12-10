@@ -1,7 +1,7 @@
 import pandas as pd
 
 
-def generate_car_matrix(df)->pd.DataFrame:
+def generate_car_matrix(df):
     """
     Creates a DataFrame  for id combinations.
 
@@ -20,7 +20,7 @@ def generate_car_matrix(df)->pd.DataFrame:
     return car_matrix
 
 
-def get_type_count(df)->dict:
+def get_type_count(df):
     """
     Categorizes 'car' values into types and returns a dictionary of counts.
 
@@ -30,12 +30,14 @@ def get_type_count(df)->dict:
     Returns:
         dict: A dictionary with car types as keys and their counts as values.
     """
-    # Write your logic here
+    df['car_type'] = pd.cut(df['car'], bins=[-float('inf'), 15, 25, float('inf')],
+                        labels=['low', 'medium', 'high'], right=False)
+    type_count = d1['car_type'].value_counts().to_dict()
 
-    return dict()
+    return dict(sorted(type_count.items()))
 
 
-def get_bus_indexes(df)->list:
+def get_bus_indexes(df):
     """
     Returns the indexes where the 'bus' values are greater than twice the mean.
 
@@ -45,12 +47,16 @@ def get_bus_indexes(df)->list:
     Returns:
         list: List of indexes where 'bus' values exceed twice the mean.
     """
-    # Write your logic here
+    mean_bus = df['bus'].mean()
 
-    return list()
+    bus_indexes = df[df['bus'] > 2 * mean_bus].index.tolist()
+
+    bus_indexes.sort()
+
+    return bus_indexes
 
 
-def filter_routes(df)->list:
+def filter_routes(df):
     """
     Filters and returns routes with average 'truck' values greater than 7.
 
@@ -60,12 +66,17 @@ def filter_routes(df)->list:
     Returns:
         list: List of route names with average 'truck' values greater than 7.
     """
-    # Write your logic here
+    avg_truck_by_route = d1.groupby('route')['truck'].mean()
 
-    return list()
+    selected_routes = avg_truck_by_route[avg_truck_by_route > 7].index.tolist()
+
+    selected_routes.sort()
 
 
-def multiply_matrix(matrix)->pd.DataFrame:
+    return selected_routes
+
+
+def multiply_matrix(matrix):
     """
     Multiplies matrix values with custom conditions.
 
@@ -75,9 +86,14 @@ def multiply_matrix(matrix)->pd.DataFrame:
     Returns:
         pandas.DataFrame: Modified matrix with values multiplied based on custom conditions.
     """
-    # Write your logic here
+    modified_matrix = matrix.copy()
+    # Apply the specified logic to modify the values
+    modified_matrix[modified_matrix > 20] *= 0.75
+    modified_matrix[modified_matrix <= 20] *= 1.25
+    # Round the values to 1 decimal place
+    modified_matrix = modified_matrix.round(1)
 
-    return matrix
+    return modified_matrix
 
 
 def time_check(df)->pd.Series:
